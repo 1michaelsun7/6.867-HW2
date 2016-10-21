@@ -24,3 +24,4 @@ def plotDecisionBoundary(X, Y, scoreFn, values, title = ""):
     pl.scatter(X[:, 0], X[:, 1], c=(1.-Y), s=50, cmap = pl.cm.cool)
     pl.title(title)
     pl.axis('tight')
+    pl.show()
