@@ -15,7 +15,6 @@ X = np.array(train[:,0:2])
 Y = train[:,2:3]
 
 # Carry out training.
-### TODO ###
 test = np.array([0,1,2])
 #print Y.shape
 #print X.shape
@@ -40,7 +39,6 @@ def NLL(x, y, w):
 
 #print gradient_error_loss(1,2,test,.2)
     
-#NLL(X, Y, np.zeros((X.shape[1]+1,)))
 def shuffle_in_unison(a, b):
     shuffled_a = np.empty(a.shape, dtype=a.dtype)
     shuffled_b = np.empty(b.shape, dtype=b.dtype)
