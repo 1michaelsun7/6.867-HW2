@@ -85,19 +85,14 @@ def pegasos_kern_Err(x, y, alpha, K, lambd):
 #    print x.shape
     ywx = np.zeros((n,))
     for j in xrange(n):
-#        print 'hello world'
-#        print theta
-#        print x_prime[j]
-#        print np.dot(np.transpose(theta),x_prime[j])
         ywx[i]=y[j]*np.sum((np.dot(np.transpose(alpha),K[j])))
-#    ywx = np.transpose(y)*np.sum(np.dot(np.transpose(alpha), K))
     p2 = 1-ywx
-#    print ywx
     zeros = np.ones((n,))
     val = np.maximum.reduce([zeros, p2])
     ans = np.sum(val)*1.0/n
-#    print ans
     return ans
+    
+    
 def pegasos_kernel(x, y, x_init=[None], K=[None], lr = 0.02, max_iters=1000):
     iters = 1
     # epsilon for convergence criterion
@@ -137,8 +132,8 @@ def pegasos_kernel(x, y, x_init=[None], K=[None], lr = 0.02, max_iters=1000):
     return alpha
 
 
-w = pegasos_lambda(X1,Y)
-print w
+#w = pegasos_lambda(X1,Y)
+#print w
 
 def kern(x, y, gamma = 4):
     return np.exp(-gamma*np.linalg.norm(x-y)**2)
@@ -149,8 +144,8 @@ for i in xrange(X.shape[0]):
         K[i][j] = kern(X[i], X[j])
 #print K
         
-#alpha = pegasos_kernel(X,Y,K=K)
-#print alpha
+alpha = pegasos_kernel(X,Y,K=K)
+print alpha
         
 # Define the predict_linearSVM(x) function, which uses global trained parameters, w
 ### TODO: define predict_linearSVM(x) ###
@@ -180,8 +175,8 @@ def predict_GaussianSVM(x):
 #    return -1
 #print X.shape[0]
 
-#plotDecisionBoundary(X, Y, predict_GaussianSVM, [-1,0,1], title = 'Gaussian SVM gamma = 0.25')
+plotDecisionBoundary(X, Y, predict_GaussianSVM, [-1,0,1], title = 'Gaussian SVM gamma = 0.25')
 # plot training results
-plotDecisionBoundary(X, Y, predict_linearSVM, [-1,0,1], title = 'Linear SVM l = 2^-10')
+#plotDecisionBoundary(X, Y, predict_linearSVM, [-1,0,1], title = 'Linear SVM l = 2^-10')
 pl.show()
 
