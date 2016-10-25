@@ -37,7 +37,7 @@ def pegasosErr(x,y,w,lambd):
 #        tot+=max(0, 1-y[i]*np.dot(w,x[i]))
 #    return tot*1.0/n
 #############CODE WORKS, WORK ON PART 2
-def pegasos_lambda(x, y, x_init=[None], lr=2**(-4), max_iters=10000):
+def pegasos_lambda(x, y, x_init=[None], lr=2**(-10), max_iters=3000):
     iters = 1
     
     # epsilon for convergence criterion
@@ -47,7 +47,7 @@ def pegasos_lambda(x, y, x_init=[None], lr=2**(-4), max_iters=10000):
     num_samples = x.shape[0]
 
     # initialize theta (subject to change)
-    init_zeros = np.ones((x.shape[1],))
+    init_zeros = np.zeros((x.shape[1],))
     theta = init_zeros
    
 #    J_err = np.linalg.norm(np.dot(x,theta)-y)**2
@@ -73,11 +73,6 @@ def pegasos_lambda(x, y, x_init=[None], lr=2**(-4), max_iters=10000):
            
 #        new_J_err = np.linalg.norm(np.dot(x,theta)-y)**2
         new_J_err = pegasosErr(x,y, theta, lr)
-        if abs(new_J_err - J_err) < eps:
-            print "Converged after %d iterations with loss %f" % (iters, new_J_err)
-            J_err = new_J_err
-            break
-
         J_err = new_J_err
         
         iters += 1
@@ -187,6 +182,6 @@ def predict_GaussianSVM(x):
 
 #plotDecisionBoundary(X, Y, predict_GaussianSVM, [-1,0,1], title = 'Gaussian SVM gamma = 0.25')
 # plot training results
-plotDecisionBoundary(X, Y, predict_linearSVM, [-1,0,1], title = 'Linear SVM l = 2^-4')
+plotDecisionBoundary(X, Y, predict_linearSVM, [-1,0,1], title = 'Linear SVM l = 2^-10')
 pl.show()
 
