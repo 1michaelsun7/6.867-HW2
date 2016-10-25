@@ -14,8 +14,7 @@ epochs = 1000;
 lmbda = .02;
 gamma = 2e-2;
 
-### TODO: Compute the kernel matrix ###
-def pegasos_kernel(x, y, x_init=[None], K=[None], lr = lmbda, max_iters=1000):
+def fit(x, y, x_init=[None], K=[None], lr = lmbda, max_iters=1000):
     iters = 1
 
     # information about the data
@@ -65,6 +64,6 @@ def plot_Gaussian():
 #        K[i][j] = kern(X[i], X[j])
 ##print K
 ###### pass in X, Y, and generated Kernel Matrix
-#alpha = pegasos_kernel(X,Y,K=K)
+#alpha = fit(X,Y,K=K)
 #print alpha
 #plot_Gaussian()
