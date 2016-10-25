@@ -36,10 +36,10 @@ def LR_MNIST_pair(pair):
 	pos = pair[1]
 	print '======Training======'
 	neg_training = generate_training_set(neg) if isinstance(neg, int) else np.array([x for n in neg for x in generate_training_set(n)])
-	neg_training = 2*np.true_divide(neg_training, 255) - 1 # normalize
+	#neg_training = 2*np.true_divide(neg_training, 255) - 1 # normalize
 
 	pos_training = generate_training_set(pos) if isinstance(pos, int) else np.array([x for p in pos for x in generate_training_set(p)])
-	pos_training = 2*np.true_divide(pos_training, 255) - 1 # normalize
+	#pos_training = 2*np.true_divide(pos_training, 255) - 1 # normalize
 
 	neg_Y = -1*np.ones((neg_training.shape[0],))
 	pos_Y = np.ones((pos_training.shape[0],))
@@ -52,10 +52,10 @@ def LR_MNIST_pair(pair):
 
 	print '======Calculating Validation Accuracy======'
 	neg_val = generate_validation_set(neg) if isinstance(neg, int) else np.array([x for n in neg for x in generate_validation_set(n)])
-	neg_val = 2*np.true_divide(neg_val, 255) - 1 # normalize
+	#neg_val = 2*np.true_divide(neg_val, 255) - 1 # normalize
 
 	pos_val = generate_validation_set(pos) if isinstance(pos, int) else np.array([x for p in pos for x in generate_validation_set(p)])
-	pos_val = 2*np.true_divide(pos_val, 255) - 1 # normalize
+	#pos_val = 2*np.true_divide(pos_val, 255) - 1 # normalize
 
 	neg_valY = -1*np.ones((neg_val.shape[0],))
 	pos_valY = np.ones((pos_val.shape[0],))
@@ -72,17 +72,14 @@ def CSVM_MNIST_pair(pair):
 	best_w = None
 	best_b = None
 	for c in C:
-		# for bw in bands:
-		# 	def kf(x1,x2):
-		# 		return gaussian_rbf(x1,x2,bw)
 		neg = pair[0]
 		pos = pair[1]
 		print '======Training======'
 		neg_training = generate_training_set(neg) if isinstance(neg, int) else np.array([x for n in neg for x in generate_training_set(n)])
-		neg_training = 2*np.true_divide(neg_training, 255) - 1 # normalize
+		#neg_training = 2*np.true_divide(neg_training, 255) - 1 # normalize
 
 		pos_training = generate_training_set(pos) if isinstance(pos, int) else np.array([x for p in pos for x in generate_training_set(p)])
-		pos_training = 2*np.true_divide(pos_training, 255) - 1 # normalize
+		#pos_training = 2*np.true_divide(pos_training, 255) - 1 # normalize
 
 		neg_Y = -1*np.ones((neg_training.shape[0],))
 		pos_Y = np.ones((pos_training.shape[0],))
@@ -107,10 +104,10 @@ def CSVM_MNIST_pair(pair):
 
 		print '======Calculating Validation Accuracy======'
 		neg_val = generate_validation_set(neg) if isinstance(neg, int) else np.array([x for n in neg for x in generate_validation_set(n)])
-		neg_val = 2*np.true_divide(neg_val, 255) - 1 # normalize
+		#neg_val = 2*np.true_divide(neg_val, 255) - 1 # normalize
 
 		pos_val = generate_validation_set(pos) if isinstance(pos, int) else np.array([x for p in pos for x in generate_validation_set(p)])
-		pos_val = 2*np.true_divide(pos_val, 255) - 1 # normalize
+		#pos_val = 2*np.true_divide(pos_val, 255) - 1 # normalize
 
 		neg_valY = -1*np.ones((neg_val.shape[0],))
 		pos_valY = np.ones((pos_val.shape[0],))
@@ -128,10 +125,10 @@ def CSVM_MNIST_pair(pair):
 
 	print '======Testing======'
 	neg_test = generate_test_set(neg) if isinstance(neg, int) else np.array([x for n in neg for x in generate_test_set(n)])
-	neg_test = 2*np.true_divide(neg_test, 255) - 1 # normalize
+	#neg_test = 2*np.true_divide(neg_test, 255) - 1 # normalize
 
 	pos_test = generate_test_set(pos) if isinstance(pos, int) else np.array([x for p in pos for x in generate_test_set(p)])
-	pos_test = 2*np.true_divide(pos_test, 255) - 1 # normalize
+	#pos_test = 2*np.true_divide(pos_test, 255) - 1 # normalize
 
 	neg_testY = -1*np.ones((neg_test.shape[0],))
 	pos_testY = np.ones((pos_test.shape[0],))
@@ -150,10 +147,10 @@ def RBF_MNIST_pair(pair):
 	pos = pair[1]
 	# Generate training sets
 	neg_training = generate_training_set(neg) if isinstance(neg, int) else np.array([x for n in neg for x in generate_training_set(n)])
-	neg_training = 2*np.true_divide(neg_training, 255) - 1 # normalize
+	#neg_training = 2*np.true_divide(neg_training, 255) - 1 # normalize
 
 	pos_training = generate_training_set(pos) if isinstance(pos, int) else np.array([x for p in pos for x in generate_training_set(p)])
-	pos_training = 2*np.true_divide(pos_training, 255) - 1 # normalize
+	#pos_training = 2*np.true_divide(pos_training, 255) - 1 # normalize
 
 	neg_Y = -1*np.ones((neg_training.shape[0],))
 	pos_Y = np.ones((pos_training.shape[0],))
@@ -163,10 +160,10 @@ def RBF_MNIST_pair(pair):
 
 	# Generate validation sets
 	neg_val = generate_validation_set(neg) if isinstance(neg, int) else np.array([x for n in neg for x in generate_validation_set(n)])
-	neg_val = 2*np.true_divide(neg_val, 255) - 1 # normalize
+	#neg_val = 2*np.true_divide(neg_val, 255) - 1 # normalize
 
 	pos_val = generate_validation_set(pos) if isinstance(pos, int) else np.array([x for p in pos for x in generate_validation_set(p)])
-	pos_val = 2*np.true_divide(pos_val, 255) - 1 # normalize
+	#pos_val = 2*np.true_divide(pos_val, 255) - 1 # normalize
 
 	neg_valY = -1*np.ones((neg_val.shape[0],))
 	pos_valY = np.ones((pos_val.shape[0],))
@@ -217,10 +214,10 @@ def RBF_MNIST_pair(pair):
 
 	print '======Testing======'
 	neg_test = generate_test_set(neg) if isinstance(neg, int) else np.array([x for n in neg for x in generate_test_set(n)])
-	neg_test = 2*np.true_divide(neg_test, 255) - 1 # normalize
+	#neg_test = 2*np.true_divide(neg_test, 255) - 1 # normalize
 
 	pos_test = generate_test_set(pos) if isinstance(pos, int) else np.array([x for p in pos for x in generate_test_set(p)])
-	pos_test = 2*np.true_divide(pos_test, 255) - 1 # normalize
+	#pos_test = 2*np.true_divide(pos_test, 255) - 1 # normalize
 
 	neg_testY = -1*np.ones((neg_test.shape[0],))
 	pos_testY = np.ones((pos_test.shape[0],))
