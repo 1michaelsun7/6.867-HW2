@@ -10,7 +10,7 @@ C = [0.01, 0.1, 1, 10, 100]
 # C = [1]
 widths = [0.1,1,10]
 
-for num in xrange(2,5):
+for num in xrange(1,2):
 	for c in C:
 		#for bw in widths:
 		# def kf(x1,x2):
