@@ -80,7 +80,41 @@ def generate_dual_solution(inpt, C):
 	sol = solvers.qp(P,q,G,h,A,b)
 	return sol['x'], sol['primal objective']
 
-def generate_kernel_solution(inpt, C, kerfunc):
+def generate_np_dual_solution(X, Y, C):
+	num_points = X.shape[0]
+
+	P_init = np.zeros((num_points,num_points))
+	q_init = -1*np.ones((num_points,))
+
+	for i in xrange(num_points):
+		for j in xrange(num_points):
+			P_init[i][j] = Y[i]*Y[j]*np.dot(X[i], X[j])
+
+	P = matrix(P_init, tc='d')
+	q = matrix(q_init, tc='d')
+	
+	G_init = np.zeros((2*num_points, num_points))
+	h_init = np.zeros((2*num_points,))
+
+	G_init[:num_points,:] = -1*np.identity(num_points)
+	G_init[num_points:, :] = np.identity(num_points)
+	h_init[num_points:] = C
+
+	G = matrix(G_init, tc='d')
+	h = matrix(h_init, tc='d')
+
+	A_init = np.zeros((1, num_points))
+	b_init = np.zeros((1,))
+
+	A_init[0, :] = np.squeeze(Y)
+
+	A = matrix(A_init, tc='d')
+	b = matrix(b_init, tc='d')
+
+	sol = solvers.qp(P,q,G,h,A,b)
+	return sol['x'], sol['primal objective']
+
+def generate_kernel_basis_solution(inpt, C, kerfunc):
 	new_inpt = inpt
 	for inp in xrange(len(inpt)):
 		x, y = inpt[inp]
@@ -122,10 +156,46 @@ def generate_kernel_solution(inpt, C, kerfunc):
 	sol = solvers.qp(P,q,G,h,A,b)
 	return sol['x'], sol['primal objective']
 
+def generate_np_kernel_solution(Xs, Ys, C, kerfunc):
+	num_points = Xs.shape[0]
+
+	P_init = np.zeros((num_points,num_points))
+	q_init = -1*np.ones((num_points,))
+
+	for i in xrange(num_points):
+		for j in xrange(num_points):
+			P_init[i][j] = Ys[i]*Ys[j]*kerfunc(Xs[i], Xs[j])
+
+	P = matrix(P_init, tc='d')
+	q = matrix(q_init, tc='d')
+	
+	G_init = np.zeros((2*num_points, num_points))
+	h_init = np.zeros((2*num_points,))
+
+	G_init[:num_points,:] = -1*np.identity(num_points)
+	G_init[num_points:, :] = np.identity(num_points)
+	h_init[num_points:] = C
+
+	G = matrix(G_init, tc='d')
+	h = matrix(h_init, tc='d')
+
+	A_init = np.zeros((1, num_points))
+	b_init = np.zeros((1,))
+
+	A_init[0, :] = np.squeeze(Ys)
+
+	A = matrix(A_init, tc='d')
+	b = matrix(b_init, tc='d')
+
+	sol = solvers.qp(P,q,G,h,A,b)
+	return sol['x'], sol['primal objective']
+
 #test_data = [[[2,2], 1], [[2, 3], 1], [[0, -1], -1], [[-3,-2],-1]]
 # test_data = [[[-2],-1], [[-.1],-1], [[.1],1], [[1],1]]
-# qp_sol = generate_dual_solution(test_data, 10000)
-# print(qp_sol[0][:])
+# test_X = np.array([-2,-.1,.1,1])
+# test_Y = np.array([-1,-1,1,1])
+# qp_sol = generate_dual_solution(test_data, 1)
+# print(qp_sol[0][:], qp_sol[1])
 # w1,w2,b = qp_sol[0][:3]
 # print(w1,w2,b)
 # print(qp_sol)

@@ -148,7 +148,7 @@ def stochastic_grad_des(x, y, x_init=[None], lr=1e-5, max_iters=100000):
             print abs(new_J_err - J_err)
 #            print new_J_err
             print theta
-        if  abs(new_J_err - J_err) < eps  or np.linalg.norm(grad_J) < eps:
+        if abs(new_J_err - J_err) < eps  or np.linalg.norm(grad_J) < eps:
             print "Converged after %d iterations with loss %f" % (iters, new_J_err)
             J_err = new_J_err
             break
