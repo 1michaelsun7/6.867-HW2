@@ -37,7 +37,7 @@ def pegasosErr(x,y,w,lambd):
 #        tot+=max(0, 1-y[i]*np.dot(w,x[i]))
 #    return tot*1.0/n
 #############CODE WORKS, WORK ON PART 2
-def pegasos_lambda(x, y, x_init=[None], lr=2**(-8), max_iters=10000):
+def pegasos_lambda(x, y, x_init=[None], lr=2**(-10), max_iters=3000):
     iters = 1
     
     # epsilon for convergence criterion
@@ -73,11 +73,6 @@ def pegasos_lambda(x, y, x_init=[None], lr=2**(-8), max_iters=10000):
            
 #        new_J_err = np.linalg.norm(np.dot(x,theta)-y)**2
         new_J_err = pegasosErr(x,y, theta, lr)
-        if abs(new_J_err - J_err) < eps:
-            print "Converged after %d iterations with loss %f" % (iters, new_J_err)
-            J_err = new_J_err
-            break
-
         J_err = new_J_err
         
         iters += 1
@@ -121,7 +116,7 @@ def pegasos_kernel(x, y, x_init=[None], K=[None], lr = 0.02, max_iters=1000):
         if iters % 1000 == 0:
             print "Iteration %d" % iters
         if iters == max_iters - 1:
-            print "Max iterations (%d iterations) exceeded" % max_iters
+            print "Max iteraonestions (%d iterations) exceeded" % max_iters
             break
             
         eta = 1.0/(iters*lr)
@@ -142,18 +137,21 @@ def pegasos_kernel(x, y, x_init=[None], K=[None], lr = 0.02, max_iters=1000):
     return alpha
 
 
-#w = pegasos_lambda(X1,Y)
-#print w
+w = pegasos_lambda(X1,Y)
+print w
 
-def kern(x, y, gamma = 0.2):
+def kern(x, y, gamma = 4):
     return np.exp(-gamma*np.linalg.norm(x-y)**2)
+    
 K = np.zeros((X.shape[0],X.shape[0]))
 for i in xrange(X.shape[0]):
     for j in xrange(X.shape[0]):
         K[i][j] = kern(X[i], X[j])
 #print K
-alpha = pegasos_kernel(X,Y,K=K)
-print alpha
+        
+#alpha = pegasos_kernel(X,Y,K=K)
+#print alpha
+        
 # Define the predict_linearSVM(x) function, which uses global trained parameters, w
 ### TODO: define predict_linearSVM(x) ###
 def predict_linearSVM(x):
@@ -161,6 +159,11 @@ def predict_linearSVM(x):
         return 1
     return -1
 
+#count_sv = 0
+#for el in alpha:
+#    if not el==0:
+#        count_sv+=1
+#print count_sv
 
 def predict_GaussianSVM(x):
     tot = 0
@@ -177,8 +180,8 @@ def predict_GaussianSVM(x):
 #    return -1
 #print X.shape[0]
 
-plotDecisionBoundary(X, Y, predict_GaussianSVM, [-1,0,1], title = 'Gaussian SVM')
+#plotDecisionBoundary(X, Y, predict_GaussianSVM, [-1,0,1], title = 'Gaussian SVM gamma = 0.25')
 # plot training results
-#plotDecisionBoundary(X, Y, predict_linearSVM, [-1,0,1], title = 'Linear SVM')
+plotDecisionBoundary(X, Y, predict_linearSVM, [-1,0,1], title = 'Linear SVM l = 2^-10')
 pl.show()
 
