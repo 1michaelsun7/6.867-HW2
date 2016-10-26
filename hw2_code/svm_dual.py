@@ -56,6 +56,7 @@ def generate_dual_solution(inpt, C):
 		for j in xrange(num_points):
 			P_init[i][j] = inpt[i][1]*inpt[j][1]*np.dot(inpt[i][0], inpt[j][0])
 
+	print(P_init, q_init)
 	P = matrix(P_init, tc='d')
 	q = matrix(q_init, tc='d')
 	
@@ -66,6 +67,7 @@ def generate_dual_solution(inpt, C):
 	G_init[num_points:, :] = np.identity(num_points)
 	h_init[num_points:] = C
 
+	print(G_init, h_init)
 	G = matrix(G_init, tc='d')
 	h = matrix(h_init, tc='d')
 
@@ -74,6 +76,7 @@ def generate_dual_solution(inpt, C):
 
 	A_init[0, :] = np.squeeze(np.array([dat[1] for dat in inpt]))
 
+	print(A_init, b_init)
 	A = matrix(A_init, tc='d')
 	b = matrix(b_init, tc='d')
 
@@ -190,10 +193,10 @@ def generate_np_kernel_solution(Xs, Ys, C, kerfunc):
 	sol = solvers.qp(P,q,G,h,A,b)
 	return sol['x'], sol['primal objective']
 
-#test_data = [[[2,2], 1], [[2, 3], 1], [[0, -1], -1], [[-3,-2],-1]]
-# test_data = [[[-2],-1], [[-.1],-1], [[.1],1], [[1],1]]
-# test_X = np.array([-2,-.1,.1,1])
-# test_Y = np.array([-1,-1,1,1])
+# test_data = [[[2,2], 1], [[2, 3], 1], [[0, -1], -1], [[-3,-2],-1]]
+# # test_data = [[[-2],-1], [[-.1],-1], [[.1],1], [[1],1]]
+# # test_X = np.array([-2,-.1,.1,1])
+# # test_Y = np.array([-1,-1,1,1])
 # qp_sol = generate_dual_solution(test_data, 1)
 # print(qp_sol[0][:], qp_sol[1])
 # w1,w2,b = qp_sol[0][:3]

@@ -1,35 +1,34 @@
 import numpy as np
-from cvxopt import matrix, solvers
-import matplotlib.pyplot as plt
-from plotBoundary import *
 import pylab as pl
 import svm_dual as sd
 from sklearn import linear_model as sklin
+import time
+import pegasos_gaussian_test as pgt
 
 odds = [1,3,5,7,9]
 evens = [2,4,6,8,0]
 pairwise_classifications = [[odds, evens]]
 C = [0.01, 0.1, 1, 10, 100]
-bands = [10**x for x in range(-1, 2)]
+bands = [10**x for x in range(-3, 4)]
 
 def gaussian_rbf(x1, x2, band):
-	return exp(-linalg.norm(x1-x2)**2/(2.0*band**2))
+	return np.exp(-np.linalg.norm(x1-x2)**2/(2.0*band**2))
 
-def generate_training_set(num):
+def generate_training_set(num, train_size=200):
 	name = str(num)
 
-	train = np.genfromtxt('data/mnist_digit_'+name+'.csv', max_rows=200)
+	train = np.genfromtxt('data/mnist_digit_'+name+'.csv', max_rows=train_size)
 	return train
 
-def generate_validation_set(num):
+def generate_validation_set(num, offset=200):
 	name = str(num)
 
-	return np.genfromtxt('data/mnist_digit_'+name+'.csv', skip_header=200, max_rows=150)
+	return np.genfromtxt('data/mnist_digit_'+name+'.csv', skip_header=offset, max_rows=150)
 
-def generate_test_set(num):
+def generate_test_set(num, offset=350):
 	name = str(num)
 
-	return np.genfromtxt('data/mnist_digit_'+name+'.csv', skip_header=350, max_rows=150)
+	return np.genfromtxt('data/mnist_digit_'+name+'.csv', skip_header=offset, max_rows=150)
 
 def LR_MNIST_pair(pair):
 	neg = pair[0]
@@ -67,8 +66,8 @@ def LR_MNIST_pair(pair):
 	prediction = LR_model.predict(X_val)
 	same = (prediction == Y_val)
 	misclassified = np.where(same == 0)
-	mis_ex = X_val[misclassified[0][0]]
-	print("Misclassified: ", Y_val[misclassified[0][0]])
+	mis_ex = X_val[misclassified[0][-2]]
+	print("Misclassified: ", Y_val[misclassified[0][-2]])
 	pl.imshow(mis_ex.reshape((28,28)), cmap=pl.cm.gray)
 	pl.show()
 
@@ -271,20 +270,19 @@ def RBF_MNIST_pair(pair):
 	accuracy = same.sum()/float(test_results.shape[0])
 	print("Test Accuracy: ", accuracy)
 
-def PEGASOS_MNIST_pair(pair):
+def PEGASOS_MNIST_pair(pair, train_size):
 	best_error = 1
-	best_C = -float("inf")
+	best_C = None
 	best_alphas = None
-	best_width = None
 	best_b = None
 
 	neg = pair[0]
 	pos = pair[1]
 	# Generate training sets
-	neg_training = generate_training_set(neg) if isinstance(neg, int) else np.array([x for n in neg for x in generate_training_set(n)])
+	neg_training = generate_training_set(neg, train_size) if isinstance(neg, int) else np.array([x for n in neg for x in generate_training_set(n, train_size)])
 	neg_training = 2*np.true_divide(neg_training, 255) - 1 # normalize
 
-	pos_training = generate_training_set(pos) if isinstance(pos, int) else np.array([x for p in pos for x in generate_training_set(p)])
+	pos_training = generate_training_set(pos, train_size) if isinstance(pos, int) else np.array([x for p in pos for x in generate_training_set(p, train_size)])
 	pos_training = 2*np.true_divide(pos_training, 255) - 1 # normalize
 
 	neg_Y = -1*np.ones((neg_training.shape[0],))
@@ -294,10 +292,10 @@ def PEGASOS_MNIST_pair(pair):
 	Ys = np.concatenate((neg_Y,pos_Y))
 
 	# Generate validation sets
-	neg_val = generate_validation_set(neg) if isinstance(neg, int) else np.array([x for n in neg for x in generate_validation_set(n)])
+	neg_val = generate_validation_set(neg, train_size) if isinstance(neg, int) else np.array([x for n in neg for x in generate_validation_set(n, train_size)])
 	neg_val = 2*np.true_divide(neg_val, 255) - 1 # normalize
 
-	pos_val = generate_validation_set(pos) if isinstance(pos, int) else np.array([x for p in pos for x in generate_validation_set(p)])
+	pos_val = generate_validation_set(pos, train_size) if isinstance(pos, int) else np.array([x for p in pos for x in generate_validation_set(p, train_size)])
 	pos_val = 2*np.true_divide(pos_val, 255) - 1 # normalize
 
 	neg_valY = -1*np.ones((neg_val.shape[0],))
@@ -306,8 +304,102 @@ def PEGASOS_MNIST_pair(pair):
 	val_X = np.concatenate((neg_val, pos_val))
 	val_Y = np.concatenate((neg_valY, pos_valY))
 
+	# Generate test sets
+	neg_test = generate_test_set(neg, train_size + 150) if isinstance(neg, int) else np.array([x for n in neg for x in generate_test_set(n, train_size + 150)])
+	neg_test = 2*np.true_divide(neg_test, 255) - 1 # normalize
+
+	pos_test = generate_test_set(pos, train_size + 150) if isinstance(pos, int) else np.array([x for p in pos for x in generate_test_set(p, train_size + 150)])
+	pos_test = 2*np.true_divide(pos_test, 255) - 1 # normalize
+
+	neg_testY = -1*np.ones((neg_test.shape[0],))
+	pos_testY = np.ones((pos_test.shape[0],))
+
+	test_X = np.concatenate((neg_test, pos_test))
+	test_Y = np.concatenate((neg_testY, pos_testY))
+
+	for c in C:
+		for bw in bands:
+			def kf(x1,x2):
+				return gaussian_rbf(x1,x2,bw)
+
+
+			def kmat_kf(x):
+				def kmat_kern(a):
+					return kf(x, a)
+				return np.apply_along_axis(kmat_kern, 1, Xs)
+
+			print '======Training======'
+			ti = time.time()
+			# Generate K matrix
+			Kmat = np.apply_along_axis(kmat_kf, 1, Xs)
+			alphas = pgt.fit(Xs, Ys, Kmat, lr=1.0/(train_size*c))
+			print("Training time: ", time.time() - ti)
+			support_threshold = 1e-8*c*1.0/train_size**2
+
+			supports = np.where(alphas > support_threshold)
+			num_supports = len(supports[0])
+			print("Supports: ", num_supports)
+
+			marginal = np.where((alphas > support_threshold) & (alphas < c - support_threshold))
+			num_marginal = len(marginal[0])
+
+			def sum_kf(x):
+				def kern(a):
+					return kf(x, a)
+
+				return np.sum(np.multiply(alphas[supports], Ys[supports[0]])*np.apply_along_axis(kern, 1, Xs[supports[0]]))
+
+			b = 1.0/num_supports*(np.sum(Ys[supports[0]]-np.apply_along_axis(sum_kf, 1, Xs[supports[0]])))
+
+			def predictSVM(x):
+				s = 0
+				for xi in xrange(len(Xs)):
+					s += alphas[xi]*Ys[xi]*kf(Xs[xi], x)
+				return np.sign(s + b)
+
+			print '======Validating======'
+			val_prediction = np.squeeze(np.apply_along_axis(predictSVM, 1, val_X))
+			val_same = (val_prediction == val_Y)
+
+			val_acc = val_same.sum()/float(val_X.shape[0])
+			print("Validation Error: ", 1-val_acc)
+
+			if (1-val_acc) < best_error:
+				print("Error updating to: ", 1-val_acc)
+				best_error = 1 - val_acc
+				best_C = c
+				best_width = bw
+				best_alphas = alphas
+				best_b = b
+
+	print("Best error: ", best_error)
+	print("Best C: ", best_C)
+	print("Best width: ", best_width)
+	def kf(x1,x2):
+		return gaussian_rbf(x1,x2,best_width)
+
+	def predictSVM(x):
+		s = 0
+		for xi in xrange(len(Xs)):
+			s += best_alphas[xi]*Ys[xi]*kf(Xs[xi], x)
+		return np.sign(s + best_b)
+
+	print '======Testing======'
+
+	test_results = np.squeeze(np.apply_along_axis(predictSVM, 1, test_X))
+	same = (test_results == test_Y)
+	misclassified = np.where(same == 0)
+	mis_ex = test_X[misclassified[0][-1]]
+	print("Misclassified as: ", test_Y[misclassified[0][-1]])
+	pl.imshow(mis_ex.reshape((28,28)), cmap=pl.cm.gray)
+	pl.show()
+	accuracy = same.sum()/float(test_results.shape[0])
+	print("Test Accuracy: ", accuracy)
 
 for pair in pairwise_classifications:
+	print("Classification Task: ", pair)
 	LR_MNIST_pair(pair)
 	#CSVM_MNIST_pair(pair)
 	#RBF_MNIST_pair(pair)
+	# for i in xrange(200, 600, 100):
+	# 	PEGASOS_MNIST_pair(pair, i)

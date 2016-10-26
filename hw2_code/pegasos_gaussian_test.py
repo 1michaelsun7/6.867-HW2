@@ -14,7 +14,7 @@ epochs = 1000;
 lmbda = .02;
 gamma = 2e-2;
 
-def fit(x, y, x_init=[None], K=[None], lr = lmbda, max_iters=1000):
+def fit(x, y, K, lr = lmbda, max_iters=1000):
     iters = 1
 
     # information about the data
@@ -26,7 +26,7 @@ def fit(x, y, x_init=[None], K=[None], lr = lmbda, max_iters=1000):
         if iters % 1000 == 0:
             print "Iteration %d" % iters
         if iters == max_iters - 1:
-            print "Max iteraonestions (%d iterations) exceeded" % max_iters
+            print "Max iterations (%d iterations) exceeded" % max_iters
             break
             
         eta = 1.0/(iters*lr)
